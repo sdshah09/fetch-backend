@@ -10,6 +10,7 @@ A FastAPI-based web service for processing receipts and calculating points based
 - In-memory storage (no database required)
 - RESTful API endpoints
 - Swagger UI documentation
+- Docker support for easy deployment
 
 ## API Endpoints
 
@@ -39,9 +40,11 @@ A FastAPI-based web service for processing receipts and calculating points based
 
 - Python 3.8 or higher
 - pip (Python package installer)
+- Docker (optional, for containerized deployment)
 
 ## Installation
 
+### Option 1: Local Installation
 1. Clone the repository:
 ```bash
 git clone https://github.com/sdshah09/fetch-backend.git
@@ -53,14 +56,44 @@ cd fetch-backend
 pip install -r requirements.txt
 ```
 
+### Option 2: Docker Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/sdshah09/fetch-backend.git
+cd fetch-backend
+```
+
+2. Build the Docker image (this step is required before running the container):
+```bash
+# Build the Docker image
+docker build -t receipt-processor .
+
+# Verify the image was created
+docker images | grep receipt-processor
+```
+
+3. Run the Docker container:
+```bash
+docker run -p 8000:8000 receipt-processor
+```
+
 ## Running the Application
 
+### Option 1: Local Run
 Start the server:
 ```bash
 uvicorn app.main:app --reload
 ```
 
 The server will start on http://0.0.0.0:8000
+
+### Option 2: Docker Run
+After building the image (see Docker Installation above), run:
+```bash
+docker run -p 8000:8000 receipt-processor
+```
+
+The server will start on http://localhost:8000
 
 ## API Documentation
 
@@ -141,8 +174,7 @@ response=$(curl -X POST "http://localhost:8000/receipts/process" \
            "total": "6.49"
          }')
 
-# 2. Extract the receipt ID from the response
-receipt_id=$(echo $response | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+# 2. You will be able to see receipt id copy it and paste it in get points api
 
 # 3. Get points for the processed receipt
 curl -X GET "http://localhost:8000/receipts/$receipt_id/points"
@@ -161,7 +193,9 @@ fetch-backend/
 ├── utils/  
 │   └── logging_module.py  # Logging logic
 ├── requirements.txt     # Project dependencies
-└── README.md           # This file
+├── Dockerfile          # Docker configuration
+├── .dockerignore      # Docker ignore file
+└── README.md          # This file
 ```
 
 ## Notes
@@ -170,3 +204,4 @@ fetch-backend/
 - The application uses FastAPI's automatic API documentation
 - All endpoints are CORS-enabled
 - Comprehensive logging is implemented
+- Docker support for easy deployment and scaling
